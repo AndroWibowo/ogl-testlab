@@ -1,0 +1,27 @@
+#java specific
+*.class
+
+#netbeans ignore personal stuff 
+build/
+dist/
+nbproject/
+build.xml
+manifest.mf
+
+#eclipse ignore personal stuff
+.project
+bin/
+.classpath
+.settings
+.settings/
+
+#engine stuff
+config.ini
+*.log
+
+## generic files to ignore
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
