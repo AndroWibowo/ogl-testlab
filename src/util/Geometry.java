@@ -106,6 +106,7 @@ public class Geometry {
         ibid = -1;
         glDeleteVertexArrays(vaid);
         vaid = -1;
+        System.out.println("Geo new");
     }
     
     /**

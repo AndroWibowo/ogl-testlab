@@ -26,6 +26,8 @@ import static opengl.GL.glEnable;
 import static opengl.GL.glFrontFace;
 import static opengl.GL.glPolygonMode;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,6 +47,7 @@ import util.Camera;
 import util.Geometry;
 import util.GeometryFactory;
 import util.Input;
+import util.Mesh;
 import util.Util;
 
 /**
@@ -57,46 +60,40 @@ public class SolSystem extends Main {
     // shader programs
 
     
-    private OrbShader orbShader;
+    private OrbShader m_orbShader;
     
-    private FragmentLightingShader flShader;
+    private FragmentLightingShader m_flShader;
 
     
     // scene data
-    private Geometry earth = null;
-    private Geometry moon = null;
-    private Geometry clouds = null;
-    private int earthFineness = 0;
-    private RadiantOrb orbs[] = new RadiantOrb[MAX_ORBS];
+    private Geometry m_earth = null;
+    private Geometry m_moon = null;
+    private Geometry m_clouds = null;
+    private int m_earthFineness = 0;
+    private RadiantOrb m_orbs[] = new RadiantOrb[MAX_ORBS];
 
     // current configurations
-    private boolean bContinue = true;
-    private boolean culling = true;
-    private boolean wireframe = true;
+    private boolean m_bContinue = true;
+    private boolean m_culling = true;
+    private boolean m_wireframe = true;
+    
+    private List<Mesh> m_actors = new ArrayList<Mesh>();
     
     // control
-
-    private final Camera cam = new Camera();
-    private final Input input = new Input(cam);
+    private final Camera m_cam = new Camera();
+    private final Input m_input = new Input(m_cam);
     
     // animation params
-    private float ingameTime = 0;
-    private float ingameTimePerSecond = 1.0f;
+    private float m_ingameTime = 0;
+    private float m_ingameTimePerSecond = 1.0f;
     
     // uniform data
-    private final Matrix4f earthModelMatrix = new Matrix4f();
-    private final Matrix4f moonModelMatrix = new Matrix4f();
-    private final Matrix4f cloudsModelMatrix = new Matrix4f();
-    private final Vector3f inverseLightDirection = new Vector3f();
-    private Texture earthTexture;
-    private Texture earthSpecularTexture;
-    private Texture moonTexture;
-    private Texture cloudsTexture;
+    private final Vector3f m_inverseLightDirection = new Vector3f();
     
     // temp data
-    private final Matrix4f moonRotation = new Matrix4f();
-    private final Matrix4f moonTilt = new Matrix4f();
-    private final Matrix4f moonTranslation = new Matrix4f();
+    private final Matrix4f m_moonRotation = new Matrix4f();
+    private final Matrix4f m_moonTilt = new Matrix4f();
+    private final Matrix4f m_moonTranslation = new Matrix4f();
     
     public static void main(String[] argv) {
         try {
@@ -121,54 +118,63 @@ public class SolSystem extends Main {
     }
     
     public void init() {
-    	flShader = new FragmentLightingShader();
+    	m_flShader = new FragmentLightingShader("FragmentLightingShader");
         
-        flShader.setViewProj(cam.getViewProjMatrix());
+        m_flShader.setViewProj(m_cam.getViewProjMatrix());
                    
-        flShader.setEyePosition(cam.getCamPos());
-        flShader.setKA(0.05f);
-        flShader.setKD(0.8f);
-        flShader.setKS(0.3f);
-        flShader.setES(16.0f);
-        flShader.setCA(1.0f, 1.0f, 1.0f);
-        flShader.init();
+        m_flShader.setEyePosition(m_cam.getCamPos());
+        m_flShader.setKA(0.05f);
+        m_flShader.setKD(0.8f);
+        m_flShader.setKS(0.3f);
+        m_flShader.setES(16.0f);
+        m_flShader.setCA(1.0f, 1.0f, 1.0f);
+        m_flShader.init();
 
         
         for(int i=0; i < MAX_ORBS; ++i) {
-        	orbs[i] = new RadiantOrb();
-        	orbs[i].setRadius(0.2f);
-        	orbs[i].setOrbitRadius(1.25f + (float)Math.random());
-        	orbs[i].setOrbitTilt(Util.PI_DIV4 - (float)Math.random() * Util.PI_DIV2);
-        	orbs[i].setSpeed((float)Math.random());
-        	orbs[i].setColor(new Vector3f((float)Math.random(), (float)Math.random(), (float)Math.random()));
-        	flShader.setLightColor(i, orbs[i].getColor());
-        	flShader.setLightPosition(i, orbs[i].getPosition());
+        	m_orbs[i] = new RadiantOrb();
+        	m_orbs[i].setRadius(0.2f);
+        	m_orbs[i].setOrbitRadius(1.25f + (float)Math.random());
+        	m_orbs[i].setOrbitTilt(Util.PI_DIV4 - (float)Math.random() * Util.PI_DIV2);
+        	m_orbs[i].setSpeed((float)Math.random());
+        	m_orbs[i].setColor(new Vector3f((float)Math.random(), (float)Math.random(), (float)Math.random()));
+        	m_flShader.setLightColor(i, m_orbs[i].getColor());
+        	m_flShader.setLightPosition(i, m_orbs[i].getPosition());
         }
 
-        orbShader = new OrbShader();
-        orbShader.setViewProj(cam.getViewProjMatrix());
-        orbShader.init();
+        m_orbShader = new OrbShader("OrbShader");
+        m_orbShader.setViewProj(m_cam.getViewProjMatrix());
+        m_orbShader.init();
         
-        inverseLightDirection.set(1.0f, 0.2f, 0.0f);
-        inverseLightDirection.normalise();
+        m_inverseLightDirection.set(1.0f, 0.2f, 0.0f);
+        m_inverseLightDirection.normalise();
         
-        earthTexture = new Texture();
-        earthTexture.init("earth.jpg");
-        earthSpecularTexture = new Texture();
-        earthSpecularTexture.init("earth_spec.jpg");
-        moonTexture = new Texture();
-        moonTexture.init("moon.jpg");
-        cloudsTexture = new Texture();
-        cloudsTexture.init("clouds.jpg");
-        
-        
-        cam.move(-5.0f, 0.0f, 0.0f);
         changeFineness(32);
+
+        Mesh earth = new Mesh("earth");
+        earth.init();
+        earth.setGeometry(m_earth);
+        earth.setDiffuseTexture("earth.jpg");
+        earth.setSpecularTexture("earth_spec.jpg");
+        Mesh moon = new Mesh("moon");
+        moon.init();
+        moon.setGeometry(m_moon);
+        moon.setDiffuseTexture("moon.jpg");
+        Mesh clouds = new Mesh("clouds");
+        clouds.init();
+        clouds.setGeometry(m_clouds);
+        clouds.setDiffuseTexture("clouds.jpg");
+
+        m_actors.add(earth);
+        m_actors.add(clouds);
+        m_actors.add(moon);
         
-        Util.translationX(3.0f, moonTranslation);
-        Util.rotationX((float)Math.toRadians(15.0), moonTilt);
+        m_cam.move(-5.0f, 0.0f, 0.0f);
         
-        input.setMainProgram(this);
+        Util.translationX(3.0f, m_moonTranslation);
+        Util.rotationX((float)Math.toRadians(15.0), m_moonTilt);
+        
+        m_input.setMainProgram(this);
     }
     
     public void render() throws LWJGLException {
@@ -178,7 +184,7 @@ public class SolSystem extends Main {
         long now, millis;
         long frameTimeDelta = 0;
         int frames = 0;
-        while(bContinue && !Display.isCloseRequested()) {
+        while(m_bContinue && !Display.isCloseRequested()) {
             // time handling
             now = System.currentTimeMillis();
             millis = now - last;
@@ -192,47 +198,35 @@ public class SolSystem extends Main {
             }
             
             // input and animation
-            input.handleInput(millis);
+            m_input.handleInput(millis);
             animate(millis);
             
             // clear screen
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
-            // earth
-            flShader.setModelMatrix(earthModelMatrix);
-            flShader.setModelITMatrix(earthModelMatrix);
-            
-            flShader.setDiffuseTexture(earthTexture);
-            flShader.setSpecularTexture(earthSpecularTexture);
-            flShader.use();
-            earth.draw();
-
-            // moon
-            flShader.setModelMatrix(moonModelMatrix);
-            flShader.setModelITMatrix(moonModelMatrix);
-            
-            flShader.setDiffuseTexture(moonTexture);
-            flShader.setSpecularTexture(null);
-            flShader.use();
-            moon.draw();
-            
-            // clouds
-            flShader.setModelMatrix(cloudsModelMatrix);
-            flShader.setModelITMatrix(cloudsModelMatrix);
-            flShader.setDiffuseTexture(cloudsTexture);
-            flShader.setSpecularTexture(null);
-            flShader.use();
-            
-            glEnable(GL_BLEND);
-            clouds.draw();
-            glDisable(GL_BLEND);
+            for (Mesh actor : m_actors) {
+	            m_flShader.setModelMatrix(actor.getModelMatrix());
+	            m_flShader.setModelITMatrix(actor.getModelITMatrix());
+	            
+	            m_flShader.setDiffuseTexture(actor.getDiffuseTexture());
+	            m_flShader.setSpecularTexture(actor.getSpecularTexture());
+	            m_flShader.use();
+	            
+	            if (actor.getName().equals("clouds")) {
+	            	glEnable(GL_BLEND);
+	            }
+	            actor.draw();
+	            if (actor.getName().equals("clouds")) {
+	            	glDisable(GL_BLEND);
+	            }
+            }
 
             // orbs
             for(int i=0; i < MAX_ORBS; ++i) {
-            	orbShader.setModelMatrix(orbs[i].getModel());
-            	orbShader.setColor(orbs[i].getColor());
-            	orbShader.use();
-                orbs[i].draw();
+            	m_orbShader.setModelMatrix(m_orbs[i].getModel());
+            	m_orbShader.setColor(m_orbs[i].getColor());
+            	m_orbShader.use();
+                m_orbs[i].draw();
             } 
             
             // present screen
@@ -244,25 +238,25 @@ public class SolSystem extends Main {
     @Override
     public void specialInput(int key) {
     	switch (key) {
-	    	case Keyboard.KEY_UP: changeFineness(2 * earthFineness); break;
-	        case Keyboard.KEY_DOWN: changeFineness(earthFineness / 2); break;
+	    	case Keyboard.KEY_UP: changeFineness(2 * m_earthFineness); break;
+	        case Keyboard.KEY_DOWN: changeFineness(m_earthFineness / 2); break;
 	        case Keyboard.KEY_LEFT:
 	            if(Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-	                ingameTimePerSecond = 0.0f;
+	                m_ingameTimePerSecond = 0.0f;
 	            } else {
-	                ingameTimePerSecond = Math.max(1.0f / 64.0f, 0.5f * ingameTimePerSecond);
+	                m_ingameTimePerSecond = Math.max(1.0f / 64.0f, 0.5f * m_ingameTimePerSecond);
 	            }
 	            break;
 	        case Keyboard.KEY_RIGHT:
 	            if(Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-	                ingameTimePerSecond = 1.0f;
+	                m_ingameTimePerSecond = 1.0f;
 	            } else {
-	                ingameTimePerSecond = Math.min(64.0f, 2.0f * ingameTimePerSecond);
+	                m_ingameTimePerSecond = Math.min(64.0f, 2.0f * m_ingameTimePerSecond);
 	            }
 	            break;
-	        case Keyboard.KEY_F2: glPolygonMode(GL_FRONT_AND_BACK, (wireframe ^= true) ? GL_FILL : GL_LINE); break;
-	        case Keyboard.KEY_F3: if(culling ^= true) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE); break;
-	        case Keyboard.KEY_ESCAPE: bContinue = false;
+	        case Keyboard.KEY_F2: glPolygonMode(GL_FRONT_AND_BACK, (m_wireframe ^= true) ? GL_FILL : GL_LINE); break;
+	        case Keyboard.KEY_F3: if(m_culling ^= true) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE); break;
+	        case Keyboard.KEY_ESCAPE: m_bContinue = false;
     	}
     }
     
@@ -272,24 +266,27 @@ public class SolSystem extends Main {
      */
     private void animate(long millis) {
         // update ingame time properly
-        ingameTime += ingameTimePerSecond * 1e-3f * (float)millis;
-        
-        // earth
-        float earthRotationAngle = Util.PI_MUL2 * ingameTime;
-        Util.rotationY(earthRotationAngle, earthModelMatrix);
-        
-        // clouds
+    	
+        m_ingameTime += m_ingameTimePerSecond * 1e-3f * (float)millis;
+        float earthRotationAngle = Util.PI_MUL2 * m_ingameTime;
         float cloudsRotationAngle = earthRotationAngle * 0.7f;
-        Util.rotationY(cloudsRotationAngle, cloudsModelMatrix);
-        
-        // moon
         float moonRotationAngle = earthRotationAngle / 27.0f;
-        Util.rotationY(moonRotationAngle, moonRotation);
-        Util.mul(moonModelMatrix, moonTilt, moonRotation, moonTranslation);
         
-        // orbs
-        for(int i=0; i < MAX_ORBS; ++i) {
-            orbs[i].animate(millis);
+        for (Mesh actor : m_actors) {
+        	String actorName = actor.getName();
+        	if (actorName.equals("earth")) {
+	        		Util.rotationY(earthRotationAngle, actor.getModelMatrix());
+        	} else if (actorName.equals("clouds")) {
+	        		Util.rotationY(cloudsRotationAngle, actor.getModelMatrix());
+        	} else if (actorName.equals("moon")) {
+	        		Util.rotationY(moonRotationAngle, m_moonRotation);
+	        		Util.mul(actor.getModelMatrix(), m_moonTilt, m_moonRotation, m_moonTranslation);
+        	}
+
+        	for(int i=0; i < MAX_ORBS; ++i) {
+	            m_orbs[i].animate(millis);
+	        }
+	        
         }
     }
     
@@ -299,16 +296,16 @@ public class SolSystem extends Main {
      */
     private void changeFineness(int newFineness) {
         if(newFineness >= 4 && newFineness <= 8192) {
-            if(earth != null) {
-                earth.delete();
+            if(m_earth != null) {
+                m_earth.delete();
             }
-            if(moon != null) {
-                moon.delete();
+            if(m_moon != null) {
+                m_moon.delete();
             }
-            earth = GeometryFactory.createSphereDisplaced(1.0f, newFineness, newFineness/2, 0.1f, "earth_height.jpg");
-            clouds = GeometryFactory.createSphere(1.09f, newFineness/2, newFineness/4);
-            moon = GeometryFactory.createSphere(0.5f, newFineness/2, newFineness/4);
-            earthFineness = newFineness;
+            m_earth = GeometryFactory.createSphereDisplaced(1.0f, newFineness, newFineness/2, 0.1f, "earth_height.jpg");
+            m_clouds = GeometryFactory.createSphere(1.09f, newFineness/2, newFineness/4);
+            m_moon = GeometryFactory.createSphere(0.5f, newFineness/2, newFineness/4);
+            m_earthFineness = newFineness;
         }
     
 

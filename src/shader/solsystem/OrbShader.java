@@ -25,8 +25,8 @@ public class OrbShader extends ShaderProgram {
 		m_color.z = b;
 	}
 	
-	public OrbShader() {
-		super();
+	public OrbShader(String name) {
+		super(name);
 	}
 	
 	@Override

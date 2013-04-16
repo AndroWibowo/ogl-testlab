@@ -56,6 +56,8 @@ public abstract class ShaderProgram {
 	/**
 	 * common uniforms
 	 */
+	protected String m_name;
+	
     protected int m_modelLoc;
     protected int m_modelITLoc;
     protected int m_viewProjLoc;
@@ -64,9 +66,10 @@ public abstract class ShaderProgram {
     protected Matrix4f m_modelIT;
     protected Matrix4f m_viewProj;
 	
-	public ShaderProgram() {
+	public ShaderProgram(String name) {
 		this.m_programId = -1;
 		this.m_staticUniformsSet = false;
+		this.m_name = name;
 	}
 	
 	public abstract void init();

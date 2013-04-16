@@ -66,4 +66,5 @@ void main(void)
 	gl_FragColor = vec4(calcLighting(positionWC, normal, c_d, c_s), 1.0);
 	//gl_FragColor = vec4(eyePosition, 1.0);
 	//gl_FragColor = vec4(c_s, 1.0);
+	//gl_FragColor = vec4(0.5, 0.8, 0.2, 1.0);
 }

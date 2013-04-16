@@ -45,8 +45,8 @@ public class FragmentLightingShader extends ShaderProgram {
     private Texture m_diffuseTex;
     private Texture m_specularTex;
 	
-	public FragmentLightingShader() {
-		super();
+	public FragmentLightingShader(String name) {
+		super(name);
 	}
     
 	@Override
