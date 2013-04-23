@@ -1,6 +1,7 @@
 #version 150 core
 
-uniform mat4 viewProj;
+uniform mat4 view;
+uniform mat4 projection;
 uniform mat4 model;
 uniform mat4 modelIT;
 
@@ -18,5 +19,5 @@ void main(void)
 	positionWC = world.xyz / world.w;
 	normalWC = (modelIT * vec4(normalMC, 0.0)).xyz;
 	fragmentTexCoords = vertexTexCoords;
-	gl_Position = viewProj * world;
+	gl_Position = projection * view * world;
 }

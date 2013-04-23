@@ -15,7 +15,6 @@ public final class Camera {
     private final Vector3f camPos = new Vector3f(0,0,-1);
     private final Matrix4f view = new Matrix4f();
     private final Matrix4f projection = new Matrix4f();
-    private final Matrix4f viewProjMatrix = new Matrix4f();
     private boolean perspective = true;
 
     /**
@@ -41,6 +40,8 @@ public final class Camera {
         sideDir.set(rot.m00, rot.m01, rot.m02);
         upDir.set(rot.m10, rot.m11, rot.m12);
         viewDir.set(rot.m20, rot.m21, rot.m22);
+        this.updateProjection();
+        this.updateView();
     }
     
     /**
@@ -53,6 +54,9 @@ public final class Camera {
         camPos.x += fb * viewDir.x + lr * sideDir.x;
         camPos.y += fb * viewDir.y + lr * sideDir.y + ud;
         camPos.z += fb * viewDir.z + lr * sideDir.z;
+//        System.out.println("CamPos: " + camPos.toString());
+        this.updateProjection();
+        this.updateView();
     }
     
     /**
@@ -61,6 +65,7 @@ public final class Camera {
     public void updateView() {
         Vector3f lookAt = Vector3f.add(camPos, viewDir, null);
         Util.lookAtRH(camPos, lookAt, upDir, view);
+//        System.out.println("Update View");
     }
     
     /**
@@ -72,6 +77,7 @@ public final class Camera {
         } else {
             Util.ortho(-1.0f, 1.0f, -1.0f, 1.0f, 1e-2f, 1e+2f, projection);
         }
+//        System.out.println("Update Proj");
     }
     
     /**
@@ -102,9 +108,5 @@ public final class Camera {
     public Vector3f getCamPos() {
         return camPos;
     }
-
-	public Matrix4f getViewProjMatrix() {
-		return viewProjMatrix;
-	}
     
 }

@@ -60,11 +60,13 @@ public abstract class ShaderProgram {
 	
     protected int m_modelLoc;
     protected int m_modelITLoc;
-    protected int m_viewProjLoc;
+    protected int m_viewLoc;
+    protected int m_projectionLoc;
     
     protected Matrix4f m_model;
     protected Matrix4f m_modelIT;
-    protected Matrix4f m_viewProj;
+    protected Matrix4f m_view;
+    protected Matrix4f m_projection;
 	
 	public ShaderProgram(String name) {
 		this.m_programId = -1;
@@ -91,14 +93,17 @@ public abstract class ShaderProgram {
 	public abstract void deUse();
 
 	protected void setStandardUniforms() {
-		if (m_model != null) {
+		if (m_model != null && m_modelLoc != -1) {
 			GL.matrix2uniform(m_model, m_modelLoc);
 		}
-		if (m_modelIT != null) {
+		if (m_modelIT != null && m_modelITLoc != -1) {
 			GL.matrix2uniform(m_modelIT, m_modelITLoc);
 		}
-		if (m_viewProj != null) {
-			GL.matrix2uniform(m_viewProj, m_viewProjLoc);
+		if (m_view != null && m_viewLoc != -1) {
+			GL.matrix2uniform(m_view, m_viewLoc);
+		}
+		if (m_projection != null && m_projectionLoc != -1) {
+			GL.matrix2uniform(m_projection, m_projectionLoc);
 		}
 	}
 	
@@ -110,14 +115,19 @@ public abstract class ShaderProgram {
 		m_modelIT = modelIT;
 	}
 	
-	public void setViewProj(Matrix4f viewProj) {
-		m_viewProj = viewProj;
+	public void setView(Matrix4f view) {
+		m_view = view;
+	}
+
+	public void setProjection(Matrix4f projection) {
+		m_projection = projection;
 	}
 	
-	public void setStandardMatrices(Matrix4f model, Matrix4f modelIT, Matrix4f viewProj) {
+	public void setStandardMatrices(Matrix4f model, Matrix4f modelIT, Matrix4f view, Matrix4f projection) {
 		m_model = model;
 		m_modelIT = modelIT;
-		m_viewProj = viewProj;
+		m_view = view;
+		m_projection = projection;
 	}
 	
     /**
@@ -160,7 +170,8 @@ public abstract class ShaderProgram {
         
         glUseProgram(m_programId);        
         m_modelLoc = glGetUniformLocation(m_programId, "model");
-        m_viewProjLoc = glGetUniformLocation(m_programId, "viewProj");
+        m_viewLoc = glGetUniformLocation(m_programId, "view");
+        m_projectionLoc = glGetUniformLocation(m_programId, "projection");
         m_modelITLoc = glGetUniformLocation(m_programId, "modelIT");
         
         log = glGetProgramInfoLog(m_programId, 1024);

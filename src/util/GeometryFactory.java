@@ -17,6 +17,7 @@ import static opengl.GL.glVertexAttribPointer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import opengl.GL;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.util.vector.Vector3f;
@@ -373,32 +374,47 @@ public class GeometryFactory {
      * Erzeugt ein Vierexk in der xy-Ebene. (4 Indizes)
      * @return VertexArrayObject ID
      */
-    public static int createQuad() {        
+    public static Geometry createQuad() {        
         int vaid = glGenVertexArrays();
         glBindVertexArray(vaid);        
         
         // vertexbuffer
         FloatBuffer vertexData = BufferUtils.createFloatBuffer((3+4)*4); // world coords, color
         vertexData.put(new float[] {
-            -1.0f, -1.0f, 0.0f,  1.0f, 1.0f, 0.4f, 1.0f,
-            +1.0f, -1.0f, 0.0f,  0.4f, 1.0f, 0.4f, 1.0f,
-            +1.0f, +1.0f, 0.0f,  1.0f, 1.0f, 0.4f, 1.0f,
-            -1.0f, +1.0f, 0.0f,  0.4f, 1.0f, 0.4f, 1.0f,
+            -1.0f, -1.0f, 0.0f,  0.0f, 0.0f, -1.0f,
+            +1.0f, -1.0f, 0.0f,  0.0f, 0.0f, -1.0f,
+            +1.0f, +1.0f, 0.0f,  0.0f, 0.0f, -1.0f,
+            -1.0f, +1.0f, 0.0f,  0.0f, 0.0f, -1.0f
         });
         vertexData.position(0);
+        
+        IntBuffer ib = BufferUtils.createIntBuffer(6);
+        ib.put(2);
+        ib.put(1);
+        ib.put(0);
+        ib.put(3);
+        ib.put(2);
+        ib.put(0);
+        ib.position(0);
                 
-        int vertexBufferID = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-        glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);       
+//        int vertexBufferID = glGenBuffers();
+//        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+//        glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);       
         
          // vs_in_pos  
-        glEnableVertexAttribArray(ShaderProgram.ATTR_POS);
-        glVertexAttribPointer(ShaderProgram.ATTR_POS, 3, GL_FLOAT, false, (3+4)*4, 0);       
+//        glEnableVertexAttribArray(ShaderProgram.ATTR_POS);
+//        glVertexAttribPointer(ShaderProgram.ATTR_POS, 3, GL_FLOAT, false, (3+2)*4, 0);       
         // vs_in_color
-        glEnableVertexAttribArray(ShaderProgram.ATTR_COLOR);
-        glVertexAttribPointer(ShaderProgram.ATTR_COLOR, 4, GL_FLOAT, false, (3+4)*4, 3*4);
+//        glEnableVertexAttribArray(ShaderProgram.ATTR_TEX);
+//        glVertexAttribPointer(ShaderProgram.ATTR_COLOR, 2, GL_FLOAT, false, (3+2)*4, 3*4);
         
-        return vaid;
+        Geometry quad = new Geometry();
+        quad.setIndices(ib, GL.GL_TRIANGLES);
+        quad.setVertices(vertexData);
+        quad.addVertexAttribute(ShaderProgram.ATTR_POS, 3, 0);
+        quad.addVertexAttribute(ShaderProgram.ATTR_NORMAL, 3, 12);
+        
+        return quad;
     }
     
     /**

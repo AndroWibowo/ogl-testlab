@@ -802,6 +802,18 @@ public class GL {
      * @param v1
      * @param v2 
      */
+    public static void glUniform2f(int location, float v0, float v1) {
+    	GL20.glUniform2f(location, v0, v1);
+    	GL.checkError("glUniform");
+    }
+    /**
+     * OpenGL 2.0
+     * @see <a href="http://www.opengl.org/sdk/docs/man4/xhtml/glUniform.xml">glUniform</a>
+     * @param location
+     * @param v0
+     * @param v1
+     * @param v2 
+     */
     public static void glUniform3f(int location, float v0, float v1, float v2) {
         GL20.glUniform3f(location, v0, v1, v2);
         GL.checkError("glUniform");

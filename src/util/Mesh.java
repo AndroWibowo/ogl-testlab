@@ -26,7 +26,7 @@ public class Mesh {
 	
 	public void init() {
 		m_modelMatrix = new Matrix4f();
-		m_modelITMatrix = new Matrix4f();
+//		m_modelITMatrix = new Matrix4f();
 	}
 	
 	public void setDiffuseTexture(String fileName) {
@@ -64,11 +64,7 @@ public class Mesh {
 	}
 
 	public Matrix4f getModelITMatrix() {
-		if (m_modelITMatrix == null) {
-			return m_modelMatrix;
-		} else {
-			return m_modelITMatrix;
-		}
+		return m_modelITMatrix;
 	}
 
 	public void setModelITMatrix(Matrix4f m_modelITMatrix) {

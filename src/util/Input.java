@@ -72,8 +72,6 @@ public class Input {
         }
         
         if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) m_mainProgram.specialInput(Keyboard.KEY_ESCAPE);
-        
-        Matrix4f.mul(m_cam.getProjection(), m_cam.getView(), m_cam.getViewProjMatrix());        
     }
     
 	

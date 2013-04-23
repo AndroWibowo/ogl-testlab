@@ -58,8 +58,6 @@ public class SolSystem extends Main {
     private static final int MAX_ORBS = 8;
     
     // shader programs
-
-    
     private OrbShader m_orbShader;
     
     private FragmentLightingShader m_flShader;
@@ -98,7 +96,6 @@ public class SolSystem extends Main {
     public static void main(String[] argv) {
         try {
             GL.init();
-//            OpenCL.init();
             
             glEnable(GL_CULL_FACE);
             glFrontFace(GL_CCW);
@@ -120,7 +117,8 @@ public class SolSystem extends Main {
     public void init() {
     	m_flShader = new FragmentLightingShader("FragmentLightingShader");
         
-        m_flShader.setViewProj(m_cam.getViewProjMatrix());
+        m_flShader.setView(m_cam.getView());
+        m_flShader.setProjection(m_cam.getProjection());
                    
         m_flShader.setEyePosition(m_cam.getCamPos());
         m_flShader.setKA(0.05f);
@@ -143,7 +141,8 @@ public class SolSystem extends Main {
         }
 
         m_orbShader = new OrbShader("OrbShader");
-        m_orbShader.setViewProj(m_cam.getViewProjMatrix());
+        m_orbShader.setView(m_cam.getView());
+        m_orbShader.setProjection(m_cam.getProjection());
         m_orbShader.init();
         
         m_inverseLightDirection.set(1.0f, 0.2f, 0.0f);
@@ -177,7 +176,7 @@ public class SolSystem extends Main {
         m_input.setMainProgram(this);
     }
     
-    public void render() throws LWJGLException {
+    public void render() {
         glClearColor(0.1f, 0.0f, 0.0f, 1.0f); // background color: dark red
         
         long last = System.currentTimeMillis();
