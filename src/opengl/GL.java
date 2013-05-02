@@ -52,6 +52,8 @@ public class GL {
             Mouse.create();
             Keyboard.create();  
             
+            GL.glDisable(GL.GL_CULL_FACE);
+            
             String vendor = GL.glGetString(GL.GL_VENDOR);
             String version = GL.glGetString(GL.GL_VERSION);
             String renderer = GL.glGetString(GL.GL_RENDERER);

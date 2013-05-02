@@ -49,12 +49,12 @@ public class Chapter6_BrickShader extends Main {
         try {
             GL.init();
             
-            glEnable(GL_CULL_FACE);
-            glFrontFace(GL.GL_CCW);
+//            glEnable(GL_CULL_FACE);
 //            glFrontFace(GL.GL_CCW);
-            glCullFace(GL_BACK);
-            glEnable(GL_DEPTH_TEST);
-            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+//            glFrontFace(GL.GL_CCW);
+//            glCullFace(GL_BACK);
+//            glEnable(GL_DEPTH_TEST);
+//            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
             
             Chapter6_BrickShader brickShader = new Chapter6_BrickShader();
             
@@ -101,7 +101,7 @@ public class Chapter6_BrickShader extends Main {
 	@Override
 	protected void render() {
 		// TODO Auto-generated method stub
-glClearColor(0.1f, 0.0f, 0.0f, 1.0f); // background color: dark red
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // background color: dark red
         
         long last = System.currentTimeMillis();
         long now, millis;

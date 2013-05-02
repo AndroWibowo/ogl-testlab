@@ -375,9 +375,6 @@ public class GeometryFactory {
      * @return VertexArrayObject ID
      */
     public static Geometry createQuad() {        
-        int vaid = glGenVertexArrays();
-        glBindVertexArray(vaid);        
-        
         // vertexbuffer
         FloatBuffer vertexData = BufferUtils.createFloatBuffer((3+4)*4); // world coords, color
         vertexData.put(new float[] {

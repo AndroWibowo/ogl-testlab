@@ -31,7 +31,7 @@ public final class Camera {
      * @param dTheta vertikale Rotation
      */
     public void rotate(float dPhi, float dTheta) {
-        phi += dPhi;
+        phi -= dPhi;
         theta = Util.clamp(theta + dTheta, -Util.PI_DIV2, +Util.PI_DIV2);
         
         Matrix4f rotX = Util.rotationX(theta, null);
@@ -51,10 +51,9 @@ public final class Camera {
      * @param ud Bewegung nach oben/unten
      */
     public void move(float fb, float lr, float ud) {
-        camPos.x += fb * viewDir.x + lr * sideDir.x;
-        camPos.y += fb * viewDir.y + lr * sideDir.y + ud;
-        camPos.z += fb * viewDir.z + lr * sideDir.z;
-//        System.out.println("CamPos: " + camPos.toString());
+        camPos.x += fb * viewDir.x + (-lr) * sideDir.x;
+        camPos.y += fb * viewDir.y + (-lr) * sideDir.y + ud;
+        camPos.z += fb * viewDir.z + (-lr) * sideDir.z;
         this.updateProjection();
         this.updateView();
     }

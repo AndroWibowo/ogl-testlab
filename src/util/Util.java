@@ -69,16 +69,22 @@ public class Util {
         Vector3f viewDir = Vector3f.sub(at, eye, null);
         viewDir.normalise();
         
-        Vector3f side = Vector3f.cross(viewDir, up, null);
+        
+        Vector3f side = Vector3f.cross(up, viewDir, null);
         side.normalise();
         
-        Vector3f newUp = Vector3f.cross(side, viewDir, null);
+        Vector3f newUp = Vector3f.cross(viewDir, side, null);
         newUp.normalise();
         
-        dst.m00 = side.x;     dst.m10 = side.y;     dst.m20 = side.z;     dst.m30 = -Vector3f.dot(eye, side);
-        dst.m01 = newUp.x;    dst.m11 = newUp.y;    dst.m21 = newUp.z;    dst.m31 = -Vector3f.dot(eye, newUp);
-        dst.m02 = -viewDir.x; dst.m12 = -viewDir.y; dst.m22 = -viewDir.z; dst.m32 = Vector3f.dot(eye, viewDir);
+//        dst.m00 = side.x;     dst.m10 = side.y;     dst.m20 = side.z;     dst.m30 = Vector3f.dot(eye, side);
+//        dst.m01 = newUp.x;    dst.m11 = newUp.y;    dst.m21 = newUp.z;    dst.m31 = Vector3f.dot(eye, newUp);
+//        dst.m02 = -viewDir.x; dst.m12 = -viewDir.y; dst.m22 = -viewDir.z; dst.m32 = -Vector3f.dot(eye, viewDir);
+        dst.m00 = side.x;     dst.m10 = side.y;     dst.m20 = side.z;     dst.m30 = 0.0f;
+        dst.m01 = newUp.x;    dst.m11 = newUp.y;    dst.m21 = newUp.z;    dst.m31 = 0.0f;
+        dst.m02 = -viewDir.x; dst.m12 = -viewDir.y; dst.m22 = -viewDir.z; dst.m32 = 0.0f;
         dst.m03 = 0.0f;       dst.m13 = 0.0f;       dst.m23 = 0.0f;       dst.m33 = 1.0f;
+        
+        dst.translate(eye.negate(null), dst);
         
         return dst;
     }

@@ -71,6 +71,39 @@ public class FragmentLightingShader extends ShaderProgram {
         }
 	}
 	
+	@Override
+	protected void setStaticUniforms() {
+		glUniform1f(m_flkaLoc, m_flka);
+		glUniform1f(m_flkdLoc, m_flkd);
+		glUniform1f(m_flksLoc, m_flks);
+		glUniform1f(m_flesLoc, m_fles);
+		glUniform3f(m_flcaLoc, m_flca.x, m_flca.y, m_flca.z);
+		for (int i = 0; i < MAX_LIGHTS; i++) {
+			glUniform3f(m_plIntensityLocs[i], m_plLightColors[i].x, m_plLightColors[i].y, m_plLightColors[i].z);
+		}
+	}
+	
+	@Override
+	protected void setDynamicUniforms() {
+		glUniform3f(m_flEyePositionLoc, m_flEyePosition.x, m_flEyePosition.y, m_flEyePosition.z);
+//        System.out.println("Loc: " + m_flEyePositionLoc + " (" + m_flEyePosition.x + ", " + m_flEyePosition.y + ", " + m_flEyePosition.z + ")");
+		if (m_diffuseTex != null) {
+			m_diffuseTex.setActive();
+			GL.glUniform1i(m_flDiffuseTexLoc, 1);
+		} else {
+			GL.glUniform1i(m_flDiffuseTexLoc, 0);
+		}
+		if (m_specularTex != null) {
+			m_specularTex.setActive();
+			GL.glUniform1i(m_flSpecularTexLoc, 2);
+		} else {
+			GL.glUniform1i(m_flSpecularTexLoc, 0);
+		}
+		for (int i = 0; i < MAX_LIGHTS; i++) {
+			glUniform3f(m_plPositionLocs[i], m_plLightPositions[i].x, m_plLightPositions[i].y, m_plLightPositions[i].z);
+		}
+	}
+	
 	public void setEyePosition(Vector3f position) {
 		m_flEyePosition = position;
 	}
@@ -134,38 +167,6 @@ public class FragmentLightingShader extends ShaderProgram {
 		this.m_plLightColors[slot] = color;
 	}
 	
-	@Override
-	protected void setStaticUniforms() {
-        glUniform1f(m_flkaLoc, m_flka);
-        glUniform1f(m_flkdLoc, m_flkd);
-        glUniform1f(m_flksLoc, m_flks);
-        glUniform1f(m_flesLoc, m_fles);
-        glUniform3f(m_flcaLoc, m_flca.x, m_flca.y, m_flca.z);
-        for (int i = 0; i < MAX_LIGHTS; i++) {
-        	glUniform3f(m_plIntensityLocs[i], m_plLightColors[i].x, m_plLightColors[i].y, m_plLightColors[i].z);
-        }
-	}
-
-	@Override
-	protected void setDynamicUniforms() {
-        glUniform3f(m_flEyePositionLoc, m_flEyePosition.x, m_flEyePosition.y, m_flEyePosition.z);
-//        System.out.println("Loc: " + m_flEyePositionLoc + " (" + m_flEyePosition.x + ", " + m_flEyePosition.y + ", " + m_flEyePosition.z + ")");
-        if (m_diffuseTex != null) {
-        	m_diffuseTex.setActive();
-        	GL.glUniform1i(m_flDiffuseTexLoc, 1);
-        } else {
-        	GL.glUniform1i(m_flDiffuseTexLoc, 0);
-        }
-        if (m_specularTex != null) {
-        	m_specularTex.setActive();
-        	GL.glUniform1i(m_flSpecularTexLoc, 2);
-        } else {
-        	GL.glUniform1i(m_flSpecularTexLoc, 0);
-        }
-        for (int i = 0; i < MAX_LIGHTS; i++) {
-        	glUniform3f(m_plPositionLocs[i], m_plLightPositions[i].x, m_plLightPositions[i].y, m_plLightPositions[i].z);
-        }
-	}
 
 	@Override
 	public void deUse() {
