@@ -77,8 +77,8 @@ public class GeometryFactory {
         IntBuffer ib = BufferUtils.createIntBuffer(k*(2*(n+1)+1));
         for(int j=0; j < k; ++j) {
             for(int i=0; i <= n; ++i) {
-                ib.put((j+1)*(n+1) + i);
                 ib.put(j*(n+1) + i);
+                ib.put((j+1)*(n+1) + i);
             }
             ib.put(RESTART_INDEX);
         }
@@ -387,11 +387,11 @@ public class GeometryFactory {
         
         IntBuffer ib = BufferUtils.createIntBuffer(6);
         ib.put(2);
+        ib.put(0);
         ib.put(1);
-        ib.put(0);
         ib.put(3);
-        ib.put(2);
         ib.put(0);
+        ib.put(2);
         ib.position(0);
                 
 //        int vertexBufferID = glGenBuffers();

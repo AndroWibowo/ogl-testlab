@@ -13,7 +13,6 @@ import static opengl.GL.glClear;
 import static opengl.GL.glClearColor;
 import static opengl.GL.glCullFace;
 import static opengl.GL.glEnable;
-import static opengl.GL.glFrontFace;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,7 +21,6 @@ import opengl.GL;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import shader.brickshader.BrickShader;
@@ -49,12 +47,13 @@ public class Chapter6_BrickShader extends Main {
         try {
             GL.init();
             
-//            glEnable(GL_CULL_FACE);
-//            glFrontFace(GL.GL_CCW);
-//            glFrontFace(GL.GL_CCW);
-//            glCullFace(GL_BACK);
-//            glEnable(GL_DEPTH_TEST);
-//            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+            glEnable(GL_DEPTH_TEST);
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+            
+            GL.glPrimitiveRestartIndex(GL.RESTART_INDEX);
+            GL.glEnable(GL.GL_PRIMITIVE_RESTART);
             
             Chapter6_BrickShader brickShader = new Chapter6_BrickShader();
             
@@ -78,6 +77,8 @@ public class Chapter6_BrickShader extends Main {
         m_wall = new Mesh("Brick");
         m_wall.init();
         m_wall.setGeometry(GeometryFactory.createQuad());
+        m_wall.setPosition(1.0f, 2.0f, 2.0f);
+//        m_wall.setRotation(x, y, z);
 //        m_wall.setGeometry(GeometryFactory.createSphere(3, 100, 150));
         
         m_brickShader = new BrickShader("BrickShader");

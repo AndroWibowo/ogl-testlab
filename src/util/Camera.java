@@ -54,6 +54,7 @@ public final class Camera {
         camPos.x += fb * viewDir.x + (-lr) * sideDir.x;
         camPos.y += fb * viewDir.y + (-lr) * sideDir.y + ud;
         camPos.z += fb * viewDir.z + (-lr) * sideDir.z;
+//        System.out.println("CamPos: " + this.camPos.toString());
         this.updateProjection();
         this.updateView();
     }

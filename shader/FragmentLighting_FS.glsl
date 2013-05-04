@@ -18,7 +18,7 @@ in vec3 positionWC;
 in vec3 normalWC;
 in vec2 fragmentTexCoords;
 
-out vec4 finalColor;
+out vec4 FragColor;
 
 /**
  * Berechnet die Intensitaet einer Punktlichtquelle.
@@ -63,8 +63,8 @@ void main(void)
     vec3 c_s = texture(specularTex, fragmentTexCoords).rgb;
 	vec3 normal = normalize(normalWC);
 	
-	gl_FragColor = vec4(calcLighting(positionWC, normal, c_d, c_s), 1.0);
-	//gl_FragColor = vec4(eyePosition, 1.0);
-	//gl_FragColor = vec4(c_s, 1.0);
-	//gl_FragColor = vec4(0.5, 0.8, 0.2, 1.0);
+	FragColor = vec4(calcLighting(positionWC, normal, c_d, c_s), 1.0);
+	//FragColor = vec4(eyePosition, 1.0);
+	//FragColor = vec4(c_s, 1.0);
+	//FragColor = vec4(0.5, 0.8, 0.2, 1.0);
 }

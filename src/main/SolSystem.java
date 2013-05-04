@@ -98,7 +98,7 @@ public class SolSystem extends Main {
             GL.init();
             
             glEnable(GL_CULL_FACE);
-            glFrontFace(GL_CCW);
+            glFrontFace(GL.GL_CW);
             glCullFace(GL_BACK);
             glEnable(GL_DEPTH_TEST);
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);

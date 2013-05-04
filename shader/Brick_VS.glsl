@@ -18,7 +18,7 @@ const float DiffuseContribution = 1.0 - SpecularContribution;
 
 void main(void) {
 	vec3 ecPosition = vec3(view * model * vec4(positionMC, 1));
-//	vec3 tnorm = normalize(vec3(modelIT * vec4(normalMC, 1)));
+//	vec3 tnorm = normalize(vec3(view * modelIT * vec4(normalMC, 1)));
 	vec3 tnorm = normalize(vec3(transpose(inverse(view * model)) * vec4(normalMC, 1)));
 	
 	vec3 lightVec = normalize(vec3(LightPosition - ecPosition));

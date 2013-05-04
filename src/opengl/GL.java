@@ -52,8 +52,6 @@ public class GL {
             Mouse.create();
             Keyboard.create();  
             
-            GL.glDisable(GL.GL_CULL_FACE);
-            
             String vendor = GL.glGetString(GL.GL_VENDOR);
             String version = GL.glGetString(GL.GL_VERSION);
             String renderer = GL.glGetString(GL.GL_RENDERER);
@@ -75,8 +73,6 @@ public class GL {
                 throw new RuntimeException("Die Grafikkarte unterstuetzt, die von uns geforderte OpenGL Version 3.2 nicht. Bitte kopiere den Inhalt der Box 'OpenGL info' und schicke ihn an nmarniok@uos.de.");
             }
             
-            glPrimitiveRestartIndex(RESTART_INDEX);
-            glEnable(GL_PRIMITIVE_RESTART);
             GL.initialized = true;
         }
     }
